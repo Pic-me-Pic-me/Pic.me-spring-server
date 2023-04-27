@@ -1,4 +1,4 @@
-package com.withpicme.server;
+package com.with.picme;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
