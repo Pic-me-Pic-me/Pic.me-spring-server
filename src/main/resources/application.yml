@@ -1,21 +1,9 @@
 spring:
-  config:
-    activate:
-      on-profile: test
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  profiles:
+    active: prod
 
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        default_batch_fetch_size: 1000
-        auto_quote_keyword: true
+---
 
-logging.level:
-  org.hibernate.SQL: debug
+spring:
+  profiles:
+    active: dev
