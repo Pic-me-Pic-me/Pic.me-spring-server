@@ -1,5 +1,6 @@
 package com.with.picme.service;
 
+import com.with.picme.config.SaltEncrypt;
 import com.with.picme.dto.auth.AuthSignUpRequestDto;
 import com.with.picme.dto.auth.AuthSignUpResponseDto;
 import com.with.picme.entity.User;
@@ -16,6 +17,7 @@ import static com.with.picme.common.message.ErrorMessage.EXIST_USERNAME;
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final SaltEncrypt saltEncrypt;
     @Override
     public AuthSignUpResponseDto createUser(AuthSignUpRequestDto request) {
         if(validateEmail(request.email()))
@@ -24,7 +26,8 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException(EXIST_USERNAME.getMessage());
 
         String accessToken = "";
-        User user = userRepository.save(request.toEntity());
+        String encryptedPassword= saltEncrypt.createPasswordWithSalt(request.password());
+        User user = userRepository.save(request.toEntity(encryptedPassword));
         return AuthSignUpResponseDto.from(user, accessToken);
     }
 
