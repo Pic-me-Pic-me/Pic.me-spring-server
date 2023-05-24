@@ -1,9 +1,8 @@
 package com.with.picme.config.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
     private final String JWT_SECRET_KEY = "";
@@ -50,5 +50,25 @@ public class JwtTokenProvider {
     private Key getSignKey() {
         byte[] keyBytes = JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public JwtTokenType validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
+            return JwtTokenType.VALID_TOKEN;
+        } catch (SecurityException | MalformedJwtException e) {
+            log.error(String.valueOf(JwtTokenType.INVALID_SIGNATURE));
+            return JwtTokenType.INVALID_SIGNATURE;
+        } catch (ExpiredJwtException e) {
+            log.error(String.valueOf(JwtTokenType.EXPIRED_TOKEN));
+            return JwtTokenType.EXPIRED_TOKEN;
+        } catch (UnsupportedJwtException e) {
+            log.error(String.valueOf(JwtTokenType.INVALID_TOKEN));
+            return JwtTokenType.INVALID_TOKEN;
+        } catch (IllegalArgumentException e) {
+            log.error(String.valueOf(JwtTokenType.EMPTY_TOKEN));
+            return JwtTokenType.EMPTY_TOKEN;
+        }
+
     }
 }
