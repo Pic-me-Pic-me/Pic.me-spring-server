@@ -4,5 +4,6 @@ public enum JwtTokenType {
     EMPTY_TOKEN,
     INVALID_TOKEN,
     EXPIRED_TOKEN,
-    VALID_TOKEN
+    VALID_TOKEN,
+    INVALID_SIGNATURE
 }
