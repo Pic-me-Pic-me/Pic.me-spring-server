@@ -22,37 +22,32 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final SaltEncrypt saltEncrypt;
     private final JwtTokenProvider tokenProvider;
+
     @Override
     public AuthSignUpResponseDto createUser(AuthSignUpRequestDto request) {
-        try {
-            if (validateEmail(request.email()))
-                throw new IllegalArgumentException(EXIST_EMAIL.getMessage());
-            if (validateUserName(request.username()))
-                throw new IllegalArgumentException(EXIST_USERNAME.getMessage());
+        if (validateEmail(request.email()))
+            throw new IllegalArgumentException(EXIST_EMAIL.getMessage());
+        if (validateUserName(request.username()))
+            throw new IllegalArgumentException(EXIST_USERNAME.getMessage());
 
-            String encryptedPassword = saltEncrypt.createPasswordWithSalt(request.password());
-            System.out.println("request.email :" + request.email() + ",. request.password: " + encryptedPassword + ", nickname: " + request.username());
-            User user = userRepository.save(request.toEntity(encryptedPassword));
+        String encryptedPassword = saltEncrypt.createPasswordWithSalt(request.password());
+        User user = userRepository.save(request.toEntity(encryptedPassword));
 
-            Authentication authentication = new UserAuthentication(user.getId(), null, null);
-            String accessToken = tokenProvider.generateAccessToken(authentication);
-            String refreshToken = tokenProvider.generateRefreshToken(authentication);
-            user.updateRefreshToken(refreshToken);
-            return AuthSignUpResponseDto.from(user, accessToken);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        Authentication authentication = new UserAuthentication(user.getId(), null, null);
+        String accessToken = tokenProvider.generateAccessToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+        user.updateRefreshToken(refreshToken);
+        return AuthSignUpResponseDto.from(user, accessToken);
+    }
 
-        }
-
-    private boolean validateEmail(String email){
-        if(userRepository.existsUserByEmail(email))
+    private boolean validateEmail(String email) {
+        if (userRepository.existsUserByEmail(email))
             return true;
         return false;
     }
 
-    private boolean validateUserName(String userName){
-        if(userRepository.existsUserByName(userName))
+    private boolean validateUserName(String userName) {
+        if (userRepository.existsUserByName(userName))
             return true;
         return false;
     }
