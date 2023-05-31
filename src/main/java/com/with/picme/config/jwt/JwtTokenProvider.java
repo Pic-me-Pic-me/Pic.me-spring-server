@@ -3,6 +3,7 @@ package com.with.picme.config.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,8 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private final String JWT_SECRET_KEY = "";
+    @Value("${spring.jwt.secretKey}")
+    private String JWT_SECRET_KEY;
     private static final int ACCESS_TOKEN_EXPIRATION_TIME = 1000;
     private static final int REFRESH_TOKEN_EXPIRATION_TIME = 1000;
 
