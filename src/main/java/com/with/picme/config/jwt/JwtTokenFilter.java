@@ -2,6 +2,7 @@ package com.with.picme.config.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -26,18 +27,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getToken(request);
         String uri = request.getRequestURI();
-
-        if (uri.startsWith("/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
-        if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
-            Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
-            UserAuthentication authentication = new UserAuthentication(userId, null, null);
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        if (uri.startsWith("/user") && (uri.contains("vote") && !request.getMethod().equals(HttpMethod.POST)) && uri.startsWith("/flower")) {
+            JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
+            if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
+                Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
+                UserAuthentication authentication = new UserAuthentication(userId, null, null);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
         filterChain.doFilter(request, response);
     }
