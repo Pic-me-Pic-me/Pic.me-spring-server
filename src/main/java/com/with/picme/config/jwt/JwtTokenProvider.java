@@ -6,11 +6,13 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 @Slf4j
@@ -18,8 +20,8 @@ import java.util.Date;
 public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey}")
     private String JWT_SECRET_KEY;
-    private static final int ACCESS_TOKEN_EXPIRATION_TIME = 1000;
-    private static final int REFRESH_TOKEN_EXPIRATION_TIME = 1000;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = Duration.ofDays(14).toMillis();
 
     public String generateAccessToken(Authentication authentication) {
         return Jwts.builder()
@@ -46,7 +48,7 @@ public class JwtTokenProvider {
         return Long.valueOf(claims.getSubject());
     }
 
-    private Date getExpireDate(int time) {
+    private Date getExpireDate(long time) {
         Date date = new Date();
         return new Date(date.getTime() + time);
     }
@@ -61,13 +63,13 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
             return JwtTokenType.VALID_TOKEN;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new TokenException(ErrorMessage.INVALID_SIGNATURE.getMessage());
+            throw new TokenException(ErrorMessage.INVALID_SIGNATURE.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (ExpiredJwtException e) {
-            throw new TokenException(ErrorMessage.EXPIRED_TOKEN.getMessage());
+            throw new TokenException(ErrorMessage.EXPIRED_TOKEN.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (UnsupportedJwtException e) {
-            throw new TokenException(ErrorMessage.UNSUPPORTED_TOKEN.getMessage());
+            throw new TokenException(ErrorMessage.UNSUPPORTED_TOKEN.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IllegalArgumentException e) {
-            throw new TokenException(ErrorMessage.EMPTY_TOKEN.getMessage());
+            throw new TokenException(ErrorMessage.EMPTY_TOKEN.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

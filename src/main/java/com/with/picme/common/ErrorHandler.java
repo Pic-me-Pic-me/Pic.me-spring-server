@@ -26,6 +26,6 @@ public class ErrorHandler {
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<ApiResponse> handleTokenException(TokenException exception) {
         ApiResponse response = ApiResponse.fail(exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, exception.getStatusCode());
     }
 }
