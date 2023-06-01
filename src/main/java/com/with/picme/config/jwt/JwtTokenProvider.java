@@ -1,5 +1,7 @@
 package com.with.picme.config.jwt;
 
+import com.with.picme.common.exception.TokenException;
+import com.with.picme.common.message.ErrorMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -59,18 +61,13 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
             return JwtTokenType.VALID_TOKEN;
         } catch (SecurityException | MalformedJwtException e) {
-            log.error(String.valueOf(JwtTokenType.INVALID_SIGNATURE));
-            return JwtTokenType.INVALID_SIGNATURE;
+            throw new TokenException(ErrorMessage.INVALID_SIGNATURE.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error(String.valueOf(JwtTokenType.EXPIRED_TOKEN));
-            return JwtTokenType.EXPIRED_TOKEN;
+            throw new TokenException(ErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error(String.valueOf(JwtTokenType.INVALID_TOKEN));
-            return JwtTokenType.INVALID_TOKEN;
+            throw new TokenException(ErrorMessage.UNSUPPORTED_TOKEN.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error(String.valueOf(JwtTokenType.EMPTY_TOKEN));
-            return JwtTokenType.EMPTY_TOKEN;
+            throw new TokenException(ErrorMessage.EMPTY_TOKEN.getMessage());
         }
-
     }
 }

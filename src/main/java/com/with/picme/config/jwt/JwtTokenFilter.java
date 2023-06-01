@@ -24,24 +24,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String accessToken = getToken(request);
-            String uri = request.getRequestURI();
+        String accessToken = getToken(request);
+        String uri = request.getRequestURI();
 
-            if (uri.startsWith("/auth")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
-            if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
-                Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
-                UserAuthentication authentication = new UserAuthentication(userId, null, null);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (uri.startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
+        if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
+            Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
+            UserAuthentication authentication = new UserAuthentication(userId, null, null);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            }
-        } catch (Exception e) {
-            log.error("Error: " + e.getMessage());
         }
         filterChain.doFilter(request, response);
     }
