@@ -27,7 +27,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getToken(request);
         String uri = request.getRequestURI();
-        if (uri.startsWith("/user") && (uri.contains("vote") && !request.getMethod().equals(HttpMethod.POST)) && uri.startsWith("/flower")) {
+        if (!uri.startsWith("/auth") && !uri.contains("common") && !uri.startsWith("/sticker")) {
             JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
             if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
                 Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
