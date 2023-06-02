@@ -5,6 +5,7 @@ import com.with.picme.common.message.ErrorMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.Duration;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -20,21 +21,22 @@ import java.util.Date;
 public class JwtTokenProvider {
     @Value("${spring.jwt.secretKey}")
     private String JWT_SECRET_KEY;
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = Duration.ofDays(14).toMillis();
+    private final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     public String generateAccessToken(Authentication authentication) {
+        val accessExpireTime = new Date().toInstant().atZone(KST).toLocalDateTime().plusHours(2).atZone(KST).toInstant();
         return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
-                .setExpiration(getExpireDate(ACCESS_TOKEN_EXPIRATION_TIME))
+                .setExpiration(Date.from(accessExpireTime))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET_KEY)
                 .compact();
     }
 
     public String generateRefreshToken(Authentication authentication) {
+        val refreshExpireTime = new Date().toInstant().atZone(KST).toLocalDateTime().plusDays(14).atZone(KST).toInstant();
         return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
-                .setExpiration(getExpireDate(REFRESH_TOKEN_EXPIRATION_TIME))
+                .setExpiration(Date.from(refreshExpireTime))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET_KEY)
                 .compact();
     }
@@ -46,11 +48,6 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return Long.valueOf(claims.getSubject());
-    }
-
-    private Date getExpireDate(long time) {
-        Date date = new Date();
-        return new Date(date.getTime() + time);
     }
 
     private Key getSignKey() {

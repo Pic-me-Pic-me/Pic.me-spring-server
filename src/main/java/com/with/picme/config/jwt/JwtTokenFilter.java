@@ -27,9 +27,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getToken(request);
         String uri = request.getRequestURI();
         if (!uri.startsWith("/auth") && !uri.contains("common") && !uri.startsWith("/sticker")) {
+            String accessToken = getToken(request);
             JwtTokenType jwtTokenType = jwtTokenProvider.validateToken(accessToken);
             if (StringUtils.hasText(accessToken) && jwtTokenType.equals(JwtTokenType.VALID_TOKEN)) {
                 Long userId = jwtTokenProvider.getUsernameFromToken(accessToken);
@@ -43,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring("Bearer ".length());
         }
         throw new TokenException(ErrorMessage.EMPTY_TOKEN.getMessage(), HttpStatus.BAD_REQUEST);
