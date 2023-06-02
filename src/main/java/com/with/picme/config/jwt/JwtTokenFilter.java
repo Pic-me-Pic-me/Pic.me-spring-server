@@ -1,8 +1,10 @@
 package com.with.picme.config.jwt;
 
+import com.with.picme.common.exception.TokenException;
+import com.with.picme.common.message.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -41,8 +43,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring("Bearer ".length());
-        return null;
+        }
+        throw new TokenException(ErrorMessage.EMPTY_TOKEN.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
