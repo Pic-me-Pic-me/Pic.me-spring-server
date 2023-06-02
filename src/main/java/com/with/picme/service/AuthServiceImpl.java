@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication);
         user.updateRefreshToken(refreshToken);
-        return AuthSignUpResponseDto.from(user, accessToken);
+        return AuthSignUpResponseDto.of(user, accessToken);
     }
 
     private boolean validateEmail(String email) {

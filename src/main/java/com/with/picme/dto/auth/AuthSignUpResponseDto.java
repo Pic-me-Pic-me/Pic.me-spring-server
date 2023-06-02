@@ -9,7 +9,7 @@ public record AuthSignUpResponseDto(
         String userName,
         String accessToken
 ) {
-    public static AuthSignUpResponseDto from(User user, String accessToken){
+    public static AuthSignUpResponseDto of(User user, String accessToken) {
         return AuthSignUpResponseDto
                 .builder()
                 .id(user.getId())
