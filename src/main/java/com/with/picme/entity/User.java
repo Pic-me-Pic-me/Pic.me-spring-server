@@ -10,6 +10,7 @@ import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
+@Table(name = "\"User\"")
 @Entity
 @NoArgsConstructor
 public class User {
