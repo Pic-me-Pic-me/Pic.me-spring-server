@@ -3,14 +3,19 @@ package com.with.picme.service;
 import com.with.picme.config.SaltEncrypt;
 import com.with.picme.config.jwt.JwtTokenProvider;
 import com.with.picme.config.jwt.UserAuthentication;
+import com.with.picme.dto.auth.AuthSignInRequestDto;
+import com.with.picme.dto.auth.AuthSignInResponseDto;
 import com.with.picme.dto.auth.AuthSignUpRequestDto;
 import com.with.picme.dto.auth.AuthSignUpResponseDto;
 import com.with.picme.entity.User;
 import com.with.picme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityNotFoundException;
 
 import static com.with.picme.common.message.ErrorMessage.EXIST_EMAIL;
 import static com.with.picme.common.message.ErrorMessage.EXIST_USERNAME;
@@ -50,5 +55,32 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsUserByName(userName))
             return true;
         return false;
+    }
+
+    public AuthSignInResponseDto signInUser(AuthSignInRequestDto request) {
+        if (!validateEmailExpression(request.email()) || !validatePasswordExpression(request.password()))
+            throw new IllegalArgumentException("잘못된 요청입니다.");
+        if (!validateEmail(request.email()))
+            throw new EntityNotFoundException("잘못된 이메일입니다.");
+        User user = checkPassword(request.email(), request.password());
+        Authentication authentication = new UserAuthentication(user.getId(), null, null);
+        String accessToken = tokenProvider.generateAccessToken(authentication);
+        return AuthSignInResponseDto.of(user, accessToken);
+    }
+
+    private boolean validateEmailExpression(String email) {
+        return email.contains("@");
+    }
+
+    private boolean validatePasswordExpression(String password){
+        return password.length() >= 10;
+    }
+
+    private User checkPassword(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (saltEncrypt.isMatch(password, user.getPassword()))
+            return user;
+        else
+            throw new IllegalArgumentException("잘못된 비밀번호입니다");
     }
 }
