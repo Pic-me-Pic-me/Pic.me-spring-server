@@ -28,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthSignUpResponseDto createUser(AuthSignUpRequestDto request) {
+        validateExpressions(request.email(), request.password());
         if (validateEmail(request.email()))
             throw new IllegalArgumentException(EXIST_EMAIL.getMessage());
         if (validateUserName(request.username()))
@@ -61,7 +62,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthSignInResponseDto signInUser(AuthSignInRequestDto request) {
-        validateExpressions(request.email(), request.password());
         if (!validateEmail(request.email()))
             throw new EntityNotFoundException(INVALID_EMAIL.getMessage());
         User user = checkPassword(request.email(), request.password());
