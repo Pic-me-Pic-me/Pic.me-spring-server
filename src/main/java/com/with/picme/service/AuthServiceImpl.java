@@ -67,6 +67,8 @@ public class AuthServiceImpl implements AuthService {
         User user = checkPassword(request.email(), request.password());
         Authentication authentication = new UserAuthentication(user.getId(), null, null);
         String accessToken = tokenProvider.generateAccessToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+        user.updateRefreshToken(refreshToken);
         return AuthSignInResponseDto.of(user, accessToken);
     }
 
