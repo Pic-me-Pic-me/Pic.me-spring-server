@@ -10,15 +10,13 @@ import com.with.picme.dto.auth.AuthSignUpResponseDto;
 import com.with.picme.entity.User;
 import com.with.picme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 
-import static com.with.picme.common.message.ErrorMessage.EXIST_EMAIL;
-import static com.with.picme.common.message.ErrorMessage.EXIST_USERNAME;
+import static com.with.picme.common.message.ErrorMessage.*;
 
 @RequiredArgsConstructor
 @Transactional
@@ -57,11 +55,15 @@ public class AuthServiceImpl implements AuthService {
         return false;
     }
 
+    private void validateExpressions(String email, String password) {
+        if (!validateEmailExpression(email) || !validatePasswordExpression(password))
+            throw new IllegalArgumentException(BAD_REQUEST.getMessage());
+    }
+
     public AuthSignInResponseDto signInUser(AuthSignInRequestDto request) {
-        if (!validateEmailExpression(request.email()) || !validatePasswordExpression(request.password()))
-            throw new IllegalArgumentException("잘못된 요청입니다.");
+        validateExpressions(request.email(), request.password());
         if (!validateEmail(request.email()))
-            throw new EntityNotFoundException("잘못된 이메일입니다.");
+            throw new EntityNotFoundException(INVALID_EMAIL.getMessage());
         User user = checkPassword(request.email(), request.password());
         Authentication authentication = new UserAuthentication(user.getId(), null, null);
         String accessToken = tokenProvider.generateAccessToken(authentication);
@@ -72,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
         return email.contains("@");
     }
 
-    private boolean validatePasswordExpression(String password){
+    private boolean validatePasswordExpression(String password) {
         return password.length() >= 10;
     }
 
@@ -81,6 +83,6 @@ public class AuthServiceImpl implements AuthService {
         if (saltEncrypt.isMatch(password, user.getPassword()))
             return user;
         else
-            throw new IllegalArgumentException("잘못된 비밀번호입니다");
+            throw new IllegalArgumentException(INVALID_PASSWORD.getMessage());
     }
 }

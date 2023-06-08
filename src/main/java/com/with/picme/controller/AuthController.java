@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.with.picme.common.message.ResponseMessage.SUCCESS_SIGN_IN;
 import static com.with.picme.common.message.ResponseMessage.SUCCESS_SIGN_UP;
 
 @RestController
@@ -30,6 +31,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse> signInUser(@RequestBody AuthSignInRequestDto request) {
         AuthSignInResponseDto response = authService.signInUser(request);
-        return ResponseEntity.ok(ApiResponse.success("회원 가입 성공", response));
+        return ResponseEntity.ok(ApiResponse.success(SUCCESS_SIGN_IN.getMessage(), response));
     }
 }
