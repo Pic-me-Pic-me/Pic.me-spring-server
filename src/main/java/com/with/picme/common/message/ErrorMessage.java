@@ -2,6 +2,7 @@ package com.with.picme.common.message;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @RequiredArgsConstructor
 @Getter
@@ -19,7 +20,8 @@ public enum ErrorMessage {
     UNSUPPORTED_TOKEN("잘못된 형식의 토큰입니다."),
     INVALID_SIGNATURE("유효하지 않은 서명입니다."),
     UNAUTHORIZED_TOKEN("인증받지 않은 토큰입니다."),
-    EMPTY_TOKEN("빈 토큰입니다.");
+    EMPTY_TOKEN("빈 토큰입니다."),
+    EMPTY_METHOD_ARGUMENT("빈 요청값이 있습니다.");
 
     private final String message;
 }

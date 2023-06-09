@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
 
+import static com.with.picme.common.message.ErrorMessage.EMPTY_METHOD_ARGUMENT;
+
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -34,7 +36,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception){
-        ApiResponse response = ApiResponse.fail(exception.getMessage());
+        ApiResponse response = ApiResponse.fail(EMPTY_METHOD_ARGUMENT.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
