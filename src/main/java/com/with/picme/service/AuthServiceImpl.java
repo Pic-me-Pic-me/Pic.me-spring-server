@@ -28,7 +28,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthSignUpResponseDto createUser(AuthSignUpRequestDto request) {
-        validateExpressions(request.email(), request.password());
         if (validateEmail(request.email()))
             throw new IllegalArgumentException(EXIST_EMAIL.getMessage());
         if (validateUserName(request.username()))
@@ -56,11 +55,6 @@ public class AuthServiceImpl implements AuthService {
         return false;
     }
 
-    private void validateExpressions(String email, String password) {
-        if (!validateEmailExpression(email) || !validatePasswordExpression(password))
-            throw new IllegalArgumentException(BAD_REQUEST.getMessage());
-    }
-
     public AuthSignInResponseDto signInUser(AuthSignInRequestDto request) {
         if (!validateEmail(request.email()))
             throw new EntityNotFoundException(INVALID_EMAIL.getMessage());
@@ -70,14 +64,6 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = tokenProvider.generateRefreshToken(authentication);
         user.updateRefreshToken(refreshToken);
         return AuthSignInResponseDto.of(user, accessToken);
-    }
-
-    private boolean validateEmailExpression(String email) {
-        return email.contains("@");
-    }
-
-    private boolean validatePasswordExpression(String password) {
-        return password.length() >= 10;
     }
 
     private User checkPassword(String email, String password) {
