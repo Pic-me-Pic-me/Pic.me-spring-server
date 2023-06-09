@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 import static com.with.picme.common.message.ResponseMessage.SUCCESS_SIGN_UP;
 
 @RestController
@@ -20,7 +22,7 @@ public class AuthController {
     private final AuthServiceImpl authService;
 
     @PostMapping("")
-    public ResponseEntity<ApiResponse> createUser(@RequestBody AuthSignUpRequestDto request) {
+    public ResponseEntity<ApiResponse> createUser(@RequestBody @Valid AuthSignUpRequestDto request) {
         AuthSignUpResponseDto response = authService.createUser(request);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SIGN_UP.getMessage(), response));
     }
