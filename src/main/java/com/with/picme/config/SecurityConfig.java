@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/health").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/vote/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class)
