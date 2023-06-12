@@ -3,6 +3,8 @@ package com.with.picme.service;
 import com.with.picme.config.SaltEncrypt;
 import com.with.picme.config.jwt.JwtTokenProvider;
 import com.with.picme.config.jwt.UserAuthentication;
+import com.with.picme.dto.auth.AuthSignInRequestDto;
+import com.with.picme.dto.auth.AuthSignInResponseDto;
 import com.with.picme.dto.auth.AuthSignUpRequestDto;
 import com.with.picme.dto.auth.AuthSignUpResponseDto;
 import com.with.picme.entity.User;
@@ -12,8 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.with.picme.common.message.ErrorMessage.EXIST_EMAIL;
-import static com.with.picme.common.message.ErrorMessage.EXIST_USERNAME;
+import javax.persistence.EntityNotFoundException;
+
+import static com.with.picme.common.message.ErrorMessage.*;
 
 @RequiredArgsConstructor
 @Transactional
@@ -50,5 +53,24 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsUserByName(userName))
             return true;
         return false;
+    }
+
+    public AuthSignInResponseDto signInUser(AuthSignInRequestDto request) {
+        if (!validateEmail(request.email()))
+            throw new EntityNotFoundException(INVALID_EMAIL.getMessage());
+        User user = checkPassword(request.email(), request.password());
+        Authentication authentication = new UserAuthentication(user.getId(), null, null);
+        String accessToken = tokenProvider.generateAccessToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+        user.updateRefreshToken(refreshToken);
+        return AuthSignInResponseDto.of(user, accessToken);
+    }
+
+    private User checkPassword(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (saltEncrypt.isMatch(password, user.getPassword()))
+            return user;
+        else
+            throw new IllegalArgumentException(INVALID_PASSWORD.getMessage());
     }
 }
