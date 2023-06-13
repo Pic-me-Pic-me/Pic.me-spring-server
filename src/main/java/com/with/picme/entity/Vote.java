@@ -37,7 +37,7 @@ public class Vote {
     private int count;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_at")
     private LocalDateTime createdDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
     @Column(name = "date")
