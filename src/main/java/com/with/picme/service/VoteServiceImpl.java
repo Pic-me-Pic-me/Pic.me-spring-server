@@ -13,7 +13,7 @@ import javax.persistence.EntityNotFoundException;
 @Transactional
 @Service
 public class VoteServiceImpl implements VoteService {
-    private VoteRepository voteRepository;
+    private final VoteRepository voteRepository;
 
     @Override
     public void closeVote(Long userId, Long voteId) {
