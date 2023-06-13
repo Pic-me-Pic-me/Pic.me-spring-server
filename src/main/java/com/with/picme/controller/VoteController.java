@@ -23,7 +23,7 @@ public class VoteController {
     private final VoteService voteService;
 
     @PatchMapping("/{voteId}")
-    public ResponseEntity<ApiResponse> closeVote(@Valid @PathVariable Long voteId, Principal principal) {
+    public ResponseEntity<ApiResponse> closeVote(@PathVariable Long voteId, Principal principal) {
         Long userId = getUser(principal);
         voteService.closeVote(userId, voteId);
         return ResponseEntity.ok(ApiResponse.success(ResponseMessage.SUCCESS_CLOSE_VOTE.getMessage()));
