@@ -28,7 +28,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setExpiration(Date.from(accessExpireTime))
-                .signWith(SignatureAlgorithm.HS512, JWT_SECRET_KEY)
+                .signWith(getSignKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -37,7 +37,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(authentication.getPrincipal()))
                 .setExpiration(Date.from(refreshExpireTime))
-                .signWith(SignatureAlgorithm.HS512, JWT_SECRET_KEY)
+                .signWith(getSignKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 

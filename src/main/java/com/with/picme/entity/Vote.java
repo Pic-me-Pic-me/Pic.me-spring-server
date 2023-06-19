@@ -7,14 +7,15 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @Entity
+@Table(name = "\"Vote\"")
 @NoArgsConstructor
 public class Vote {
     @Id
@@ -26,23 +27,23 @@ public class Vote {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name="status")
+    @Column(name = "status")
     private boolean status;
 
-    @Column(name="title")
+    @Column(name = "title")
     private String title;
 
-    @Column(name="count")
+    @Column(name = "count")
     private int count;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, name = "created_at")
     private LocalDateTime createdDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
-    @Column(name="date")
+    @Column(name = "date")
     private int date;
 
-    @Column(name="type")
+    @Column(name = "type")
     private int type;
 
     @Builder
@@ -52,5 +53,9 @@ public class Vote {
         this.count = 0;
         this.date = date;
         this.type = type;
+    }
+
+    public void setStatus() {
+        this.status = false;
     }
 }
