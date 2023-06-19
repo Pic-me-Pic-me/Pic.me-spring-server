@@ -2,6 +2,7 @@ package com.with.picme.common.message;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @RequiredArgsConstructor
 @Getter
@@ -27,6 +28,12 @@ public enum ErrorMessage {
      * vote
      **/
     NOT_EXIST_VOTE("존재하지 않는 투표입니다."),
-    NOT_ADMIN_VOTE("본인의 투표가 아닙니다");
+    NOT_ADMIN_VOTE("본인의 투표가 아닙니다"),
+  
+    /**
+    * exception
+    **/
+    EMPTY_METHOD_ARGUMENT("빈 요청값이 있습니다.");
+
     private final String message;
 }

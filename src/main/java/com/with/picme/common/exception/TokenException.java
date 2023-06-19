@@ -2,16 +2,10 @@ package com.with.picme.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class TokenException extends RuntimeException {
-    private String message;
-    private HttpStatus statusCode;
+public class TokenException extends PicmeException {
 
     public TokenException(String message, HttpStatus statusCode) {
-        this.message = message;
-        this.statusCode = statusCode;
+        super(message, statusCode);
     }
 
-    public HttpStatus getStatusCode() {
-        return statusCode;
-    }
 }

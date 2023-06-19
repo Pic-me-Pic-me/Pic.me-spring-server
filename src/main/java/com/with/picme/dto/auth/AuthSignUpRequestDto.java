@@ -2,10 +2,14 @@ package com.with.picme.dto.auth;
 
 import com.with.picme.entity.User;
 import lombok.Builder;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 
 @Builder
 public record AuthSignUpRequestDto(
