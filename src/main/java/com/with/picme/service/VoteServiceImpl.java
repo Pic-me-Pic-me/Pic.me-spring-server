@@ -18,8 +18,9 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public void closeVote(Long userId, Long voteId) {
         Vote vote = getVote(voteId);
-        if (!validateUser(userId, vote))
+        if (!validateUser(userId, vote)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ADMIN_VOTE.getMessage());
+        }
         vote.setStatus();
     }
 

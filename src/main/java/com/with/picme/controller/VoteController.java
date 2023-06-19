@@ -30,8 +30,9 @@ public class VoteController {
     }
 
     private Long getUser(Principal principal) {
-        if (isNull(principal.getName()))
+        if (isNull(principal.getName())) {
             throw new IllegalArgumentException(ErrorMessage.EMPTY_TOKEN.getMessage());
+        }
         return Long.valueOf(principal.getName());
     }
 }
