@@ -1,10 +1,8 @@
 package com.with.picme.controller;
 
 import com.with.picme.common.ApiResponse;
-import com.with.picme.dto.auth.AuthSignInRequestDto;
-import com.with.picme.dto.auth.AuthSignInResponseDto;
-import com.with.picme.dto.auth.AuthSignUpRequestDto;
-import com.with.picme.dto.auth.AuthSignUpResponseDto;
+import com.with.picme.dto.auth.*;
+import com.with.picme.dto.auth.kakao.KakaoUser;
 import com.with.picme.service.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +30,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse> signInUser(@RequestBody AuthSignInRequestDto request) {
         AuthSignInResponseDto response = authService.signInUser(request);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SIGN_IN.getMessage(), response));
+    }
+
+    @PostMapping("/kakao/check")
+    public ResponseEntity<ApiResponse> findSocialUser(@RequestBody @Valid  AuthSocialCheckRequestDto request) {
+        KakaoUser user = authService.getUser(request);
+        return null;
     }
 }

@@ -23,7 +23,7 @@ public enum ErrorMessage {
     EMPTY_TOKEN("빈 토큰입니다."),
     INVALID_PASSWORD("잘못된 비밀번호입니다."),
     INVALID_EMAIL("잘못된 이메일입니다."),
-  
+
     /**
     * exception
     **/
@@ -38,7 +38,14 @@ public enum ErrorMessage {
     /**
      * user
      */
-    CANT_GET_USERINFO("유저 아이디를 갖고올 수 없습니다.");
+    CANT_GET_USERINFO("유저 아이디를 갖고올 수 없습니다."),
+
+
+    /*
+    * social
+     */
+    NO_SOCIAL_TYPE("제공하는 소셜 서비스가 다릅니다."),
+    NO_SOCIAL_USER("소셜 서비스에 가입하지 않은 유저입니다");
 
     private final String message;
 }
