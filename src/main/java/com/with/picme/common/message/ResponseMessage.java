@@ -23,5 +23,6 @@ public enum ResponseMessage {
      */
     GET_USER_INFO("유저 정보 갖고오기 성공");
 
+
     private final String message;
     }

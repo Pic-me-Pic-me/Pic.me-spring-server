@@ -22,21 +22,18 @@ public enum ErrorMessage {
     UNAUTHORIZED_TOKEN("인증받지 않은 토큰입니다."),
     EMPTY_TOKEN("빈 토큰입니다."),
     INVALID_PASSWORD("잘못된 비밀번호입니다."),
-
     INVALID_EMAIL("잘못된 이메일입니다."),
   
-  /**
-  * exception
-  **/
+    /**
+    * exception
+    **/
     EMPTY_METHOD_ARGUMENT("빈 요청값이 있습니다."),
-
 
     /**
      * vote
      **/
     NOT_EXIST_VOTE("존재하지 않는 투표입니다."),
     NOT_ADMIN_VOTE("본인의 투표가 아닙니다"),
-
 
     /**
      * user
