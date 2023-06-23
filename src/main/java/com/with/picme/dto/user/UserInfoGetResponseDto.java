@@ -7,14 +7,12 @@ import lombok.Builder;
 public record UserInfoGetResponseDto (
         String userName,
         String email
-){
-    public static UserInfoGetResponseDto of(User user){
+) {
+    public static UserInfoGetResponseDto of(User user) {
         return UserInfoGetResponseDto
                 .builder()
                 .userName(user.getName())
                 .email(user.getEmail())
                 .build();
-
     }
-
 }

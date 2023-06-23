@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserInfoGetResponseDto getUserInfo(Long userId){
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException(ErrorMessage.CANT_GET_USERINFO.getMessage()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CANT_GET_USERINFO.getMessage()));
         return UserInfoGetResponseDto.of(user);
     };
 
