@@ -10,8 +10,5 @@ import java.util.Optional;
 
 public interface AuthenticationProviderRepository extends JpaRepository<AuthenticationProvider, Long> {
     @EntityGraph(attributePaths = "user")
-    Optional<AuthenticationProvider> findById(Long id);
-
-    @EntityGraph(attributePaths = "user")
     Optional<AuthenticationProvider> findByIdAndProvider(Long id, ProviderType providerType);
 }
