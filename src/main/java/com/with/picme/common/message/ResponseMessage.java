@@ -21,8 +21,12 @@ public enum ResponseMessage {
     /*
     user
      */
-    GET_USER_INFO("유저 정보 갖고오기 성공");
+    GET_USER_INFO("유저 정보 갖고오기 성공"),
 
+    /*
+    social
+     */
+    CHECK_KAKAO_USER_SUCCESS("카카오 계정 확인 성공");
 
     private final String message;
     }

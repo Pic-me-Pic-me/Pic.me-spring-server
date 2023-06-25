@@ -1,15 +1,16 @@
 package com.with.picme.service;
 
 import com.with.picme.common.SocialType;
-import com.with.picme.config.KakaoAuth;
+import com.with.picme.common.message.ErrorMessage;
+import com.with.picme.config.kakao.KakaoAuthImpl;
 import com.with.picme.config.SaltEncrypt;
 import com.with.picme.config.jwt.JwtTokenProvider;
 import com.with.picme.config.jwt.UserAuthentication;
 import com.with.picme.dto.auth.*;
-import com.with.picme.dto.auth.kakao.KakaoAccount;
 import com.with.picme.dto.auth.kakao.KakaoUser;
-import com.with.picme.dto.auth.kakao.KakaoUserResponseDto;
+import com.with.picme.entity.AuthenticationProvider;
 import com.with.picme.entity.User;
+import com.with.picme.repository.AuthenticationProviderRepository;
 import com.with.picme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+
+import java.util.Optional;
 
 import static com.with.picme.common.message.ErrorMessage.*;
 
@@ -27,8 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final SaltEncrypt saltEncrypt;
     private final JwtTokenProvider tokenProvider;
-    private final KakaoAuth kakaoAuth;
-
+    private final KakaoAuthImpl kakaoAuthImpl;
+    private final AuthenticationProviderRepository authenticationProviderRepository;
     @Override
     public AuthSignUpResponseDto createUser(AuthSignUpRequestDto request) {
         if (validateEmail(request.email()))
@@ -71,15 +74,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public KakaoUser getUser(AuthSocialCheckRequestDto request) {
-        if (!request.socialType().equals(SocialType.kakao)){
+        if (!request.socialType().equals(SocialType.kakao.toString())) { //토큰 타입 확인
             throw new IllegalArgumentException(NO_SOCIAL_TYPE.getMessage());
         }
-        //카카오 계정 확인
-        KakaoUserResponseDto user = kakaoAuth.getProfileInfo(request.token());
-        checkSocialUser(user);
-        // 이메일 확인 -> 이메일 없는 경우 ""으로 대체
-        KakaoUserResponseDto kakaoUser = checkSocialUserHaveEmail(user);
-        return KakaoUser.of(kakaoUser.id(), kakaoUser.kakao_account().email());
+        return kakaoAuthImpl.getKakaoUser("Bearer " + request.token()); //카카오 계정 확인
+    }
+
+    public User findByKey(KakaoUser kakaoUser){
+        Optional<AuthenticationProvider> authenticationProvider = authenticationProviderRepository
+                                                                        .findByIdAndProvider(kakaoUser.userId(),
+                                                                                kakaoUser.providerType());
+        // 카카오 계정은 확인, 우리 서비스에 이미 로그인함
+        if(authenticationProvider.isPresent()) {
+            Long userId = authenticationProvider.get().getUser().getId();
+            //유저 테이블에서 찾기 , 못찾을 경우 에러 날려야 하는지 궁굼.. ->node에서는 return null로 날림
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CANT_GET_USERINFO.getMessage()));
+            return user;
+        }
+        // 카카오 계정은 확인 됐지만, 우리 서비스에는 로그인 안됨
+        return null;
     }
 
     private User checkPassword(String email, String password) {
@@ -88,19 +102,5 @@ public class AuthServiceImpl implements AuthService {
             return user;
         else
             throw new IllegalArgumentException(INVALID_PASSWORD.getMessage());
-    }
-
-    private boolean checkSocialUser(KakaoUserResponseDto kakaoUser){
-        if (kakaoUser.id() != null){
-            throw new IllegalArgumentException(NO_SOCIAL_USER.getMessage());
-        }
-        return true;
-    }
-
-    private KakaoUserResponseDto checkSocialUserHaveEmail(KakaoUserResponseDto kakaoUserResponseDto){
-        if (kakaoUserResponseDto.kakao_account().email() == null){
-            return KakaoUserResponseDto.of(kakaoUserResponseDto.id(), KakaoAccount.of(""));
-        }
-        return kakaoUserResponseDto;
     }
 }

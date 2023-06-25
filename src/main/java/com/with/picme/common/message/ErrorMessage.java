@@ -45,7 +45,8 @@ public enum ErrorMessage {
     * social
      */
     NO_SOCIAL_TYPE("제공하는 소셜 서비스가 다릅니다."),
-    NO_SOCIAL_USER("소셜 서비스에 가입하지 않은 유저입니다");
+    NO_SOCIAL_USER("소셜 서비스에 가입하지 않은 유저입니다"),
+    NOT_FOUND_SOCIAL_TOKEN("소셜로그인 토큰이 유효하지 않습니다.");
 
     private final String message;
 }
