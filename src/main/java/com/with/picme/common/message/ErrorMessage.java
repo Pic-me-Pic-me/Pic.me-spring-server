@@ -38,7 +38,12 @@ public enum ErrorMessage {
     /**
      * user
      */
-    CANT_GET_USERINFO("유저 아이디를 갖고올 수 없습니다.");
+    CANT_GET_USERINFO("유저 아이디를 갖고올 수 없습니다."),
+
+    /*
+    social login
+     */
+    CHECK_KAKAO_USER_FAIL("카카오 계정 확인 실패");
 
     private final String message;
 }

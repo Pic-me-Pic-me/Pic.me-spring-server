@@ -21,8 +21,12 @@ public enum ResponseMessage {
     /*
     user
      */
-    GET_USER_INFO("유저 정보 갖고오기 성공");
+    GET_USER_INFO("유저 정보 갖고오기 성공"),
 
+    /*
+    social login
+     */
+    SOCIAL_SIGNIN_SUCCESS("소셜 로그인 성공");
 
     private final String message;
     }
