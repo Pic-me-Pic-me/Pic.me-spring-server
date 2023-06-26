@@ -13,6 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @Entity
 @NoArgsConstructor
+@Table(name = "\"AuthenticationProvider\"")
 public class AuthenticationProvider {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -20,6 +21,7 @@ public class AuthenticationProvider {
     private Long id;
 
     @Column(name="provider_type")
+    @Enumerated(EnumType.STRING)
     private ProviderType provider;
 
     @OneToOne(fetch = FetchType.LAZY)
