@@ -1,10 +1,10 @@
 package com.with.picme.controller;
 
 import com.with.picme.common.ApiResponse;
-import com.with.picme.dto.auth.AuthSignInRequestDto;
-import com.with.picme.dto.auth.AuthSignInResponseDto;
-import com.with.picme.dto.auth.AuthSignUpRequestDto;
-import com.with.picme.dto.auth.AuthSignUpResponseDto;
+import com.with.picme.dto.auth.*;
+import com.with.picme.dto.auth.kakao.KakaoUser;
+import com.with.picme.entity.User;
+import com.with.picme.repository.AuthenticationProviderRepository;
 import com.with.picme.service.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
-import static com.with.picme.common.message.ResponseMessage.SUCCESS_SIGN_IN;
-import static com.with.picme.common.message.ResponseMessage.SUCCESS_SIGN_UP;
+
+
+import static com.with.picme.common.message.ResponseMessage.*;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthServiceImpl authService;
+    private final AuthenticationProviderRepository authenticationProviderRepository;
 
     @PostMapping("")
     public ResponseEntity<ApiResponse> createUser(@RequestBody @Valid AuthSignUpRequestDto request) {
@@ -32,5 +34,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse> signInUser(@RequestBody AuthSignInRequestDto request) {
         AuthSignInResponseDto response = authService.signInUser(request);
         return ResponseEntity.ok(ApiResponse.success(SUCCESS_SIGN_IN.getMessage(), response));
+    }
+
+    @PostMapping("/kakao/check")
+    public ResponseEntity<ApiResponse> findSocialUser(@RequestBody AuthSocialCheckRequestDto request) {
+        AuthSocialCheckResponseDto response = authService.findSocialUser(request);
+        return ResponseEntity.ok(ApiResponse.success(CHECK_KAKAO_USER_SUCCESS.getMessage(),response));
     }
 }

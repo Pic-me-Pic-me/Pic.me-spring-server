@@ -1,12 +1,15 @@
 package com.with.picme.service;
 
-import com.with.picme.dto.auth.AuthSignInRequestDto;
-import com.with.picme.dto.auth.AuthSignInResponseDto;
-import com.with.picme.dto.auth.AuthSignUpRequestDto;
-import com.with.picme.dto.auth.AuthSignUpResponseDto;
+import com.with.picme.dto.auth.*;
+import com.with.picme.dto.auth.kakao.KakaoUser;
+import com.with.picme.entity.AuthenticationProvider;
+import com.with.picme.entity.User;
+
+import java.util.Optional;
 
 public interface AuthService {
 
     AuthSignUpResponseDto createUser(AuthSignUpRequestDto request);
     AuthSignInResponseDto signInUser(AuthSignInRequestDto request);
+    AuthSocialCheckResponseDto findSocialUser(AuthSocialCheckRequestDto request);
 }
