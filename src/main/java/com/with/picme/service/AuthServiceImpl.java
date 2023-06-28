@@ -72,28 +72,26 @@ public class AuthServiceImpl implements AuthService {
         return AuthSignInResponseDto.of(user, accessToken);
     }
 
+
     @Override
-    public KakaoUser getUser(AuthSocialCheckRequestDto request) {
+    public AuthSocialCheckResponseDto findSocialUser(AuthSocialCheckRequestDto request) {
         if (!request.socialType().equals(SocialType.kakao.toString())) { //토큰 타입 확인
             throw new IllegalArgumentException(NO_SOCIAL_TYPE.getMessage());
         }
-        return kakaoAuthImpl.getKakaoUser("Bearer " + request.token()); //카카오 계정 확인
-    }
+        KakaoUser kakaoUser = kakaoAuthImpl.getKakaoUser("Bearer " + request.token()); //카카오 계정 확인
 
-    public User findByKey(KakaoUser kakaoUser){
-        Optional<AuthenticationProvider> authenticationProvider = authenticationProviderRepository
-                                                                        .findByIdAndProvider(kakaoUser.userId(),
-                                                                                kakaoUser.providerType());
-        // 카카오 계정은 확인, 우리 서비스에 이미 로그인함
+        Optional<AuthenticationProvider> authenticationProvider = authenticationProviderRepository.findByIdAndProvider(kakaoUser.userId(), kakaoUser.providerType());
+
+        // 카카오 계정으로 우리 서비스에 회원가입 함
         if(authenticationProvider.isPresent()) {
             Long userId = authenticationProvider.get().getUser().getId();
-            //유저 테이블에서 찾기 , 못찾을 경우 에러 날려야 하는지 궁굼.. ->node에서는 return null로 날림
-            User user = userRepository.findById(userId)
+            //유저 테이블에서 찾기
+            userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CANT_GET_USERINFO.getMessage()));
-            return user;
+            return AuthSocialCheckResponseDto.of(kakaoUser.userId(),kakaoUser.email(),true);
         }
-        // 카카오 계정은 확인 됐지만, 우리 서비스에는 로그인 안됨
-        return null;
+        // 카카오 계정은 확인, 우리 서비스에는 회원가입 안됨
+        return AuthSocialCheckResponseDto.of(kakaoUser.userId(),kakaoUser.email(),false);
     }
 
     private User checkPassword(String email, String password) {

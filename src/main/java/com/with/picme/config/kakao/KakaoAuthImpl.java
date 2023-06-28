@@ -27,14 +27,16 @@ public class KakaoAuthImpl implements KakaoAuth {
 
     public KakaoUser getKakaoUser(String accessToken){
         KakaoUserResponseDto user = this.getProfileInfo(accessToken);
-        checkSocialUser(user);
+        if(!checkSocialUser(user)){
+            throw new IllegalArgumentException(NO_SOCIAL_USER.getMessage());
+        };
         KakaoUser kakaoUser = checkSocialUserHaveEmail(user);
         return kakaoUser;
     }
 
     private boolean checkSocialUser(KakaoUserResponseDto kakaoUser){
         if (kakaoUser.id() == null){
-            throw new IllegalArgumentException(NO_SOCIAL_USER.getMessage());
+            return false;
         }
         return true;
     }

@@ -11,7 +11,5 @@ public interface AuthService {
 
     AuthSignUpResponseDto createUser(AuthSignUpRequestDto request);
     AuthSignInResponseDto signInUser(AuthSignInRequestDto request);
-    KakaoUser getUser(AuthSocialCheckRequestDto request);
-
-    User findByKey(KakaoUser of);
+    AuthSocialCheckResponseDto findSocialUser(AuthSocialCheckRequestDto request);
 }

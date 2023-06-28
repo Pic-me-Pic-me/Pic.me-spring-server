@@ -38,14 +38,7 @@ public class AuthController {
 
     @PostMapping("/kakao/check")
     public ResponseEntity<ApiResponse> findSocialUser(@RequestBody AuthSocialCheckRequestDto request) {
-        KakaoUser user  = authService.getUser(request);
-        User existUser = authService.findByKey(user);
-        AuthSocialCheckResponseDto response ;
-        if (existUser==null)
-            response = AuthSocialCheckResponseDto.of(user.userId(),user.email(),false);
-        else{
-            response = AuthSocialCheckResponseDto.of(user.userId(),user.email(),true);
-        }
+        AuthSocialCheckResponseDto response = authService.findSocialUser(request);
         return ResponseEntity.ok(ApiResponse.success(CHECK_KAKAO_USER_SUCCESS.getMessage(),response));
     }
 }
